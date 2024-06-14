@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useState, useContext } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import AdoptedPetContext from "./AdoptedPetContext";
 import ErrorBoundary from "./ErrorBoundary";
 import Carousel from "./Carousel";
 import fetchPet from "./fetchPet";
@@ -8,6 +9,10 @@ import Modal from "./Modal";
 
 const Details = () => {
   const [showModal, setShowModal] = useState(false); // Don't show by default
+  const navigate = useNavigate(); // Using this to navigate the user back to the home page after clicking 'Yes'
+
+  // eslint-disable-next-line no-unused-vars
+  const [_, setAdoptedPet] = useContext(AdoptedPetContext); // Use _ for when it doesn't matter what the value is
   const { id } = useParams();
   const results = useQuery(["details", id], fetchPet);
   // ["details", id] will be passed as the queryKey to fetchPet
@@ -43,7 +48,14 @@ const Details = () => {
               <div>
                 <h1>Would you like to adopt {pet.name}?</h1>
                 <div className="buttons">
-                  <button>Yes</button>
+                  <button
+                    onClick={() => {
+                      setAdoptedPet(pet); // Sets the adopted pet to the pet in question
+                      navigate("/"); // Back to home page
+                    }}
+                  >
+                    Yes
+                  </button>
                   <button onClick={() => setShowModal(false)}>No</button>
                 </div>
               </div>
